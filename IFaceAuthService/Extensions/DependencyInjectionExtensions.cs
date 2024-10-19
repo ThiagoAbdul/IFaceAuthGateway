@@ -1,5 +1,6 @@
 ﻿using IFaceAuthService.Data;
 using IFaceAuthService.Helpers;
+using IFaceAuthService.Middlewares;
 using IFaceAuthService.Services;
 using IFaceAuthService.UseCases;
 using Microsoft.EntityFrameworkCore;
@@ -22,5 +23,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<JsonWebTokenHelper>();
         services.AddScoped<TokenService>();
         services.AddScoped<UserService>();
+
+        services.AddTransient<RequestForwardingMiddleware>();
     }
 }

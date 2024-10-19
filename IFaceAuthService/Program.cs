@@ -1,6 +1,7 @@
 using IFaceAuthService.DTOs.In;
 using IFaceAuthService.Extensions;
 using IFaceAuthService.Helpers;
+using IFaceAuthService.Middlewares;
 using IFaceAuthService.UseCases;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,8 @@ builder.Services.AddCors(options =>
     );
 });
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddDependencies(builder.Configuration);
 
 var app = builder.Build();
@@ -38,17 +41,19 @@ app.UseHttpsRedirection();
 
 app.UseCors("all");
 
-app.UseHealthChecks("/api/Health");
+app.UseHealthChecks("/auth/Health");
 
-app.MapPost("/sign-in", SignIn)
+app.UseMiddleware<RequestForwardingMiddleware>();
+
+app.MapPost("/auth/sign-in", SignIn)
 .WithName("SignIn")
 .WithOpenApi();
 
-app.MapPost("/sign-up", SignUp)
+app.MapPost("/auth/sign-up", SignUp)
 .WithName("SignUp")
 .WithOpenApi();
 
-app.MapGet("protected", Protected)
+app.MapGet("/auth/protected", Protected)
 .RequireAuthorization()
 .WithName("Protected")
 .WithOpenApi();
