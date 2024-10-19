@@ -38,16 +38,30 @@ public sealed class JsonWebTokenHelper(IConfiguration configuration)
 
     public async Task<TokenValidationResult> ValidationTokenResultAsync(string token)
     {
-        var result = await _tokenHandler.ValidateTokenAsync(token, new TokenValidationParameters()
-        {
-            IssuerSigningKey = GetSigningCredentials().Key,
-            ValidAudience = _audience,
-            ValidIssuer = _issuer,
-            ClockSkew = TimeSpan.Zero
-        });
+        var result = await _tokenHandler.ValidateTokenAsync(token, GetTokenValidationParameters());
 
         return result;
     }
 
+    private TokenValidationParameters GetTokenValidationParameters()
+    {
+        return GetTokenValidationParameters(configuration);
+    }
+
+    public static TokenValidationParameters GetTokenValidationParameters(IConfiguration configuration)
+    {
+        string secretKey = Environment
+            .GetEnvironmentVariable("jwtSignatureKey")!
+            ?? configuration["Jwt:SignatureKey"]!;
+        SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(secretKey));
+
+        return new TokenValidationParameters()
+        {
+            IssuerSigningKey = securityKey,
+            ValidAudience = _audience,
+            ValidIssuer = _issuer,
+            ClockSkew = TimeSpan.Zero
+        };
+    }
 
 }

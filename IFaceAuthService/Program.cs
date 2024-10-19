@@ -1,11 +1,7 @@
-using IFaceAuthService;
 using IFaceAuthService.DTOs.In;
-using IFaceAuthService.DTOs.Out;
 using IFaceAuthService.Extensions;
 using IFaceAuthService.Helpers;
-using IFaceAuthService.Models;
 using IFaceAuthService.UseCases;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +10,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
-builder.Services.AddAuthorization();
 
-builder.Services
-    .AddAuthentication("jwt")
-    .AddJwtBearer("jwt");
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 
 builder.Services.AddCors(options =>
 {
@@ -55,6 +49,7 @@ app.MapPost("/sign-up", SignUp)
 .WithOpenApi();
 
 app.MapGet("protected", Protected)
+.RequireAuthorization()
 .WithName("Protected")
 .WithOpenApi();
 
@@ -81,17 +76,18 @@ static async Task<IResult> SignUp([FromBody] SignUpRequest request, SignUpUseCas
 
 static async Task<IResult> Protected(HttpContext context, JsonWebTokenHelper tokenHelper)
 {
-    string? token = context.Request.JwtToken();
+    //string? token = context.Request.JwtToken();
 
-    if (string.IsNullOrEmpty(token))
-        return TypedResults.Unauthorized();
+    //if (string.IsNullOrEmpty(token))
+    //    return TypedResults.Unauthorized();
 
-    var validationResult = await tokenHelper.ValidationTokenResultAsync(token);
+    //var validationResult = await tokenHelper.ValidationTokenResultAsync(token);
 
-    if (validationResult.IsValid)
-    {
-        return TypedResults.Ok(validationResult.SubjectId());
-    }
-    return TypedResults.Unauthorized();
+    //if (validationResult.IsValid)
+    //{
+    //    return TypedResults.Ok(validationResult.SubjectId());
+    //}
+    //return TypedResults.Unauthorized();
+    return TypedResults.Ok();
 
 }
