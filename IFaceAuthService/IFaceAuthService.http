@@ -1,0 +1,6 @@
+@IFaceAuthService_HostAddress = http://localhost:5155
+
+GET {{IFaceAuthService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

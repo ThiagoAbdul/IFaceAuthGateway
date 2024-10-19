@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  iface_auth_db:
+      image: postgres:16-alpine
+      container_name: iface_auth_pg
+      hostname: iface_auth_pg
+      ports:
+        - "5434:5432"
+      environment:
+        - "POSTGRES_PASSWORD=postgres"
+        - "POSTGRES_USER=root"
+        - "POSTGRES_DB=iface_auth_db"
+        - "PGDATA=/var/lib/postgresql/data/pgdata"
+      volumes:
+      - "iface_auth_db_volume:/var/lib/postgresql/data/pgdata"
+  
+  # iface_api:
+  #   image: iface-main-api
+  #   container_name: iface_api
+  #   hostname: iface_api
+  #   ports:
+  #       - "8080:8080"
+  #   environment:
+  #       - "DB_CONNECTION_STRING=Host=iface_pg;Port=5432;Database=iface_db;Username=root;Password=postgres"
+
+     
+volumes:
+  iface_auth_db_volume:
